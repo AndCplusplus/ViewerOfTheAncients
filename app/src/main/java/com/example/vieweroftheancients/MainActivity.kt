@@ -2,6 +2,7 @@ package com.example.vieweroftheancients
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.vieweroftheancients.databinding.ActivityMainBinding
 import com.google.gson.Gson
 import com.loopj.android.http.AsyncHttpClient
@@ -11,15 +12,18 @@ import cz.msebera.android.httpclient.Header
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var heroAdapter: HeroAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.heroButton.setOnClickListener {
-            fetchHeroData()
-        }
+        heroAdapter = HeroAdapter()
+        binding.heroRecyclerView.adapter = heroAdapter
+        binding.heroRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        fetchHeroData()
     }
 
     private fun fetchHeroData() {
@@ -27,15 +31,11 @@ class MainActivity : AppCompatActivity() {
         client.get("https://api.opendota.com/api/heroes", object : TextHttpResponseHandler() {
             override fun onSuccess(statusCode: Int, headers: Array<out Header>?, responseString: String?) {
                 val heroes = Gson().fromJson(responseString, Array<Hero>::class.java).toList()
-                val randomHero = heroes.random()
-
-                binding.heroName.text = randomHero.localizedName
-                binding.heroAttribute.text = "Primary Attribute: ${randomHero.primaryAttr}"
-                binding.heroRoles.text = "Roles: ${randomHero.roles.joinToString()}"
+                heroAdapter.submitList(heroes)
             }
 
             override fun onFailure(statusCode: Int, headers: Array<out Header>?, responseString: String?, throwable: Throwable?) {
-                binding.heroName.text = "Error"
+                // Handle error
             }
         })
     }

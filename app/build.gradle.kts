@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("com.loopj.android:android-async-http:1.4.9")
     implementation("io.coil-kt:coil:2.5.0")
     implementation("com.google.code.gson:gson:2.9.0")
